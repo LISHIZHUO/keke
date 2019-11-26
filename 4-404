@@ -1,0 +1,178 @@
+# 实验四、程序控制结构
+
+## 实验目的：
+掌握程序的基本结构，进行简单的程序设计。
+
+## 实验要求：
+
+1. 掌握分支结构（选择结构）基本语法，完成相应的程序练习题。
+2. 掌握循环结构，完成相应的程序练习题。
+3. 掌握异常处理语句。
+## 实验学时：
+
+4学时。实验1-4需2学时，实验5-8需2学时
+## 实验内容：
+
+### 一、完成实验4.2、4.3、2.8、3.5
+
+#### 4.2 统计不同字符个数。用户从键盘输入一行字符，编写一个程序，统计并输出其中英文字符、数字、空格、和其他字符的个数
+```python
+stri=input("请输入您想要的字符串：")
+kong=0
+alpha=0
+chi=0
+num=0
+other=0
+for i in stri:
+    if i == " ":
+        kong +=1
+    elif '0' <= i <= '9':
+        num+=1
+    elif i>=u'\u4e00' and i<=u'\u9fa5':
+        chi+=1
+    elif True == i.isalpha():
+        alpha+=1
+    else:
+        other+=1
+print("您输入的字符串中有{}个空格,{}个数字,{}个中文,{}个英文字符,{}
+个其他字符".format(kong,num,chi,alpha,other))
+```
+&nbsp;
+
+#### 4.3最大公约数计算。从键盘接收两个整数，编写程序求出这两个整数的最大公约数和最小公倍数（提示：求最大公约数可用辗转相除法，求最小公倍数则用两数的积除以最大公约数即可。）
+```python
+a,b=eval(input("请输入两个整数，中间用,隔开："))
+c=a*b
+if a<b:
+    a,b=b,a
+while False == (a in[0,1]):
+    b,a=a,b%a
+c=c/b
+print("最小公约数为：{},最大公倍数为：{}".format(b,c))
+
+```
+&nbsp;
+
+2.8 正方形螺旋线的绘制。利用turtle库绘制一个正方形螺旋线。
+```python
+from turtle import *
+left(90)
+length = 5
+speed = 20
+for i in range(30):
+    fd(length)
+    left(90)
+    fd(length)
+    left(90)
+    length += 5
+    fd(length)
+```
+&nbsp;
+
+3.5田字格的输出。使用print()函数输出。
+```python
+for i in range(11):
+    if i in [0,5,10]:
+        print("+ - - - - + - - - - +")
+    else:
+        print("| | |")
+```
+&nbsp;
+
+
+### 二、完成实验4.1、4.4、4.5、4.6
+
+#### 4.1 猜数字游戏。在程序中预定一个0~9之间的整数，让用户通过键盘输入所猜的数，如果大于预设的数，显示“遗憾，太小了”；小于预设的数，显示“遗憾，太大了”，如此循环，直至猜中该数，显示“预测N次，你猜中了！”，其中N是用户输入数字的次数。
+
+```python
+from random import randint
+num=randint(1,10)
+tim=0
+while 1:
+    try:
+        putnum=eval(input("请输入您猜测的数字："))
+        tim+=1
+    if putnum > num:
+        print("遗憾！太大了")
+    elif putnum <num:
+        print("遗憾！太小了")
+    elif putnum==num:
+        print("预测{}次，你猜中了！".format(tim))
+        break
+    except:
+        print("输入有误！")
+```
+&nbsp;
+
+4.4猜数游戏续。改编程序练习题4.1，让计算机能够产生一个预设数字，范围在0~100之间，其他游戏规则不变。
+```python
+from random import *
+seed(100)
+num=randint(0,100)
+tim=0
+while 1:
+    try:
+        putnum=eval(input("请输入您猜测的数字："))
+        tim+=1
+        if putnum > num:
+            print("遗憾！太大了")
+        elif putnum <num:
+            print("遗憾！太小了")
+        elif putnum==num:
+            print("预测{}次，你猜中了！".format(tim))
+        break
+    except:
+        print("输入有误！")
+```
+&nbsp;
+
+4.5猜数字游戏续。改编程序练习题4.4程序，当用户输入的不是整数（如字母、浮点数等）时，程序会终止执行退出。改编该程序，当用户输入出错时给出“输入内容必须为整数！”的提示，并让用户重新输入。
+```python
+from random import *
+import types
+seed(100)
+num=randint(0,100)
+tim=0
+while 1:
+    try:
+        putnum=eval(input("请输入您猜测的数字："))
+        if type(putnum) == type(1):
+            tim+=1
+        if putnum > num:
+            print("遗憾！太大了")
+        elif putnum <num:
+            print("遗憾！太小了")
+        elif putnum==num:
+            print("预测{}次，你猜中了！".format(tim))
+        break
+        else:
+            print("输入内容必须为整数！")
+    except:
+            print("输入有误！")
+```
+&nbsp;
+
+4.6羊车门问题。有3扇关闭的门，一扇门后面停着汽车，其余门后是山羊，只有主持人知道每扇门后面是什么。参赛者可以选择一扇门，在开其它之前，支持人会开启另一扇门，露出门后的山羊，然后允许参赛者更换自己的选择。请问:参赛者更换选择后能否能否增加猜中汽车的机会？——这是一个经典的问题。
+```python
+import random
+times = eval(input("请输入你希望模拟的次数："))
+pick_first_n = 0
+pick_change_n = 0
+for i in range(times):
+    car = random.randint(0, 2) #生成哪个门后藏车
+    pick_first = random.randint(0, 2) #初始随机选一个
+    if pick_first == car: #如果直接选中，则初始选择正确，pick_first_n 加 1，换选择一定不中
+        pick_first_n += 1
+    else: #如果初始选择没中，则主持人打开另一扇没车的门后，换选择一定中
+        pick_change_n += 1 #故 pick_change_n 加 1
+pick_first_percent = pick_first_n / times #计算坚持不换选择的胜率
+pick_change_percent = pick_change_n / times #计算换选择的胜率
+print("如果坚持初选，胜率为{:.2f}%".format(pick_first_percent * 
+100))
+print("如果改变初选，胜率为{:.2f}%".format(pick_change_percent * 
+100))
+```
+&nbsp;
+
+## 实验总结
+这一章我们学习到了程序的基本控制结构，掌握了程序的分支结构，例如：if等分支结构。还掌握了程序的控制结构，例如：运用for语句和while语句实现循环控制。所以无论是多么复杂的程序，都可以通过顺序、选择、循环来实现。这两节实验课，我们练习了多个简单的控制程序。还有一道经典的羊车门问题，实际用程序模拟，模拟10000次的情况下：如果坚持初选，胜率为33.60%；如果改变初选，胜率为66.40%，结果上还是有差别的，在用python计算圆周率时，用到了蒙特卡罗方法，又被称为随机抽样或统计试验方法，能够真实模拟实际物理过程，解决问题与实际非常符合。蒙特卡罗方法还可以用来进行：积分的计算、计算产品的合格率、对证券市场进行模拟。在对单车道的交通阻塞情况的模拟中证明：单车道即使没有任何原因，也会产生交通阻塞。
