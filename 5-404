@@ -1,0 +1,101 @@
+实验五、函数
+实验目的：
+掌握函数的定义和调用方法；理解递归函数的使用。
+实验要求：
+能正确定义和调用函数。
+能使用函数解决代码复用。
+能编写递归函数。
+实验学时：
+6学时。（实验1-4：2学时；实验5-7：2学时；实验8-9：2学时）
+实验内容：
+1. 程序练习题5.1
+提示：修改上次实验4的代码，用函数替代程序中输出部分。
+def tian(n):
+    line=3*n+1
+    for i in range(1,line+1):
+        if i%3==1:
+            print(n*"+----",end="")
+            print("+")
+        else :
+            print("|    "*n,end="")
+            print("|")
+
+def mian():
+    n=eval(input("请输入你要的阶数"))
+    tian(n)
+mian()
+2. 程序练习题5.2
+实现Odd()函数，参数为整数，如果参数为奇数，返回True，否则返回False。
+def isOdd():
+    n = input("请输入一个数字")
+    if type(eval(n))==type(1):
+        return True
+    else:
+        return False
+print(isOdd())
+3. 程序练习题5.3
+实现isNum()函数，参数为一个字符串，如果这个字符串属于整数、浮点数或复数的表示，则返回True,负责返回False。 提示：使用eval()函数
+def isNum(n):
+    try:
+        n =eval(n)
+        if type (n) == int or type (n)==float or type(n)== complex:
+            print("True")
+    except NameError:
+            print("False")
+def main():
+    n =input("请输入你希望的参数")
+    isNum(n)
+main()
+4. 程序练习题5.4
+实现multi()函数，参数个数不限，返回所有参数乘积。 提示：参考教材129页实例，在函数的参数中使用带”*”号的参数。
+def multi(*b):
+    a = 1
+    for i in b:
+        a *= i
+    return a
+print(multi(1,2,3))
+5. 程序练习题5.5
+实现isPrime()函数，参数为整数，要有异常处理。如果整数是质数，返回True,否则返回Flase。
+def isPrime(num):
+    import math
+    try:
+        if type(num) == type(0.):
+            raise TypeError
+        r = int(math.floor(math.sqrt(num)))
+    except TypeError:
+        print('不是一个有效的整数')
+        return None
+    if num == 1:
+        return False
+    for i in range(2, r+1):
+        if num % i == 0:
+        return False
+    return True
+
+print(isPrime(2))
+print(isPrime(44))
+print(isPrime('str'))
+print(isPrime(1))
+print(isPrime(3.3))
+print(isPrime(0x18))
+6. 斐波拉契数列。
+Fabric数列描述如下:
+编写Fabric函数程序，用递归实现。
+def recur_fibo(n):
+   """递归函数
+   输出斐波那契数列"""
+   if n <= 1:
+       return n
+   else:
+       return(recur_fibo(n-1) + recur_fibo(n-2))
+ 
+nterms = int(input("您要输出几项? "))
+if nterms <= 0:
+   print("输入正数")
+else:
+   print("斐波那契数列:")
+   for i in range(nterms):
+       print(recur_fibo(i))
+实验总结
+这次实验课的目的是让我们学习python,能正确定义和调用函数;能使用函数解决代码复用;能编写递归函数。 
+我们使用函数有两个目的：降低编程难度和代码重用。利用它可以将一个复杂的大问题分解一系列的小问题，然后将这些小问题继续划分成更小的问题，当问题细化到足够简单时，就可以分而治之，为每一个小问题编写程序，并通过函数封装，当各个小问题都解决了，大问题也就迎刃而解了。这是一种自顶向下的程序设计思想，函数可以在一个程序中的多个位置使用，也可以用于多个程序，当需要修改代码时，只需要在一个程序中修改一次，所有调用位置的功能都更新了，这种代码重用降低了代码行数和代码维护难度。这是实验进一步提高了自己的编程能力。
