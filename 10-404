@@ -1,0 +1,167 @@
+实验十、网络爬虫
+实验目的：
+学习网络爬虫编写，获取数据
+实验要求：
+能运用request库和beautifulsoup4库访问URL并解析获取的HTML
+能向百度等搜索引擎自动提交关键词并获取返回结果
+实验学时：
+4学时
+实验内容：
+程序练习题10.1
+import requests
+from bs4 import BeautifulSoup
+allUniv=[]
+def getHTMLText(url):
+    try:
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+        r.encoding = 'utf-8'
+        return r.text
+    except:
+        return ""
+
+def fillUnivList(soup):
+    data = soup.find_all('tr')
+    for tr in data:
+        ltd = tr.find_all('td')
+        if len(ltd ) == 0:
+            continue
+        singleUniv = []
+        for td in ltd:
+            singleUniv.append(td.string)
+
+        allUniv.append(singleUniv)
+
+def printUnivList(province):
+    print("{1:^2}{2:{0}^10}{3:{0}^6}{4:{0}^4}{5:{0}^10}".format(chr(12288),"排名","学校名称","省市","总分","培养规模"))
+    for u in allUniv:
+        if province in u[2]:
+            print("{1:^2}{2:{0}^10}{3:{0}^6}{4:{0}^4}{5:{0}^10}".format(chr(12288),u[0],u[1],u[2],u[3],u[4]))
+
+
+def main(p):
+    url = 'http://www.zuihaodaxue.cn/zuihaodaxuepaiming2018.html'
+    html = getHTMLText(url)
+    soup = BeautifulSoup(html,'html.parser')
+    fillUnivList(soup)
+    printUnivList(p)
+
+main('江西')
+程序练习题10.2
+import requests
+import re
+from bs4 import BeautifulSoup
+
+def getHTMLText(url):
+    send_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36",
+        "Connection": "keep-alive",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.8"}
+    try:
+        r = requests.get(url, headers=send_headers)
+        r.raise_for_status()
+        print(r.status_code)
+        r.encoding = 'utf-8'
+        return r.text
+    except:
+        return ""
+
+def fillUnivList(soup, allUniv):
+    data = soup.find_all('div',{'class':re.compile('shadow-dark')})
+    for div in data:
+        singleUniv = []
+        div1 = div.find('div',{'style':'margin-left: 2.5rem;'})
+        rank = div1.get_text().strip()
+        singleUniv.append(rank.split(' ')[0])
+
+        h3 = div.find('h3')
+        singleUniv.append(h3.get_text().strip())
+
+        ldiv = div.find_all('div',{'style':'padding-right: 0.5rem;'})
+        singleUniv.append(ldiv[0].strong.string)
+        singleUniv.append(ldiv[1].strong.string)
+        allUniv.append(singleUniv)
+
+def printUnivList(allUniv):
+    print("{:<6}{:<20}{:<6}{:<10}".format("排名","学校名称","学费","培养规模"))
+    for u in allUniv:
+        print("{:<6}{:<20}{:<10}{:<10}".format(u[0],u[1],u[2],u[3]))
+
+
+def main(num):
+    allUniv = []
+    url = 'https://www.usnews.com/best-colleges/rankings/national-universities'
+
+    for i in range(1, num+1):
+        ri = url + '?_page=' + str(i)
+        html = getHTMLText(ri)
+        soup = BeautifulSoup(html, 'html.parser')
+        fillUnivList(soup, allUniv)
+    printUnivList(allUniv)
+
+main(4)
+程序练习题10.6
+import requests
+import json
+import re
+import os
+index = 1
+
+def downloadImageFile(imgUrl, destUrl, fname=''):
+    local_filename = imgUrl.split('/')[-1]
+    print('Download Image File={}'.format(local_filename))
+    try:
+        r = requests.get(imgUrl, stream=True)
+        r.raise_for_status()
+
+        if len(fname) == 0:
+            fname = local_filename
+        print('fname={}'.format(fname))
+        with open(destUrl + "/" + fname, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+                    f.flush()
+            f.close()
+        return r.status_code
+    except:
+        return r.status_code
+
+def download(urls,path):
+    global index
+    for url in urls:
+        print("Download Image from page:{}".format(url))
+        status = downloadImageFile(url,path,str(index)+".jpg")
+        try:
+            if str(status)[0] == '4':
+                print("未下载成功{}".format(url))
+                continue
+        except Exception as e:
+            print("未下载成功{}".format(url))
+        index += 1
+
+page = 'https://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj'\
+       '&ct=201326592&is=&fp=result&queryWord=杨幂&cl=&lm=&hd=&latest='\
+       '&copyright=&ie=utf-8&oe=utf-8&adpicid=&st=&z=&ic='\
+       '&word=杨幂&s=&se=&tab=&width=&height=&face=&istype='\
+       '&qc=&nc=&fr=&pn=30&rn=30&gsm=1e&1545721051065='
+try:
+    rsp = requests.get(page,timeout=10)
+    rsp.raise_for_status()
+except:
+    print('对不起，百度图片访问失败！程序退出')
+    
+imgdata=json.loads(rsp.text)
+imgs = imgdata['data']
+
+urls=[]
+for im in imgs:
+    url = im.get('thumbURL')
+    print(url)
+    if url is not None:
+        urls.append(im.get('thumbURL')) 
+
+download(urls, 'e:/baidupic')
+实验总结：
+这次实验课的目的是：能运用request库和beautifulsoup4库访问URL并解析获取的HTML，能向百度等搜索引擎自动提交关键词并获取返回结果。网络爬虫应用一般分为两个步骤：1.通过网络链接获取网页内容；2.对获得的网页内容进行处理。这两个步骤分别使用不同的函数库：requests和beautifulsoup4。requests库是一个简洁且简单的处理HTTP请求的第三方库，beautifulsoup4库是一个解析和处理HTML和XML的第三方库。因为电脑可能没有装这两个函数库，所以会报错，我们使用pip命令即可安装好这两个库并使用它们。能正确应用爬虫，是python学习的目标，这也是我们学以致用的表现。能把课上老师教的东西转化为实实在在的东西是一见很有趣的事情。
